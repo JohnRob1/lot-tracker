@@ -1,10 +1,19 @@
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Recipe {
@@ -46,6 +55,28 @@ public class Recipe {
     }
 
     public void addLotNumbers(File excelFile) {
-
+        try {
+            FileInputStream fis = new FileInputStream(excelFile);
+            XSSFWorkbook wb = new XSSFWorkbook(fis);
+            XSSFSheet sheet = wb.getSheetAt(0);
+            Iterator<Row> iterator = sheet.iterator();
+            while(iterator.hasNext()) {
+                Row row = iterator.next();
+                Iterator<Cell> cellIterator = row.cellIterator();
+                while(cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+                    CellType type = cell.getCellType();
+                    if (type == CellType.STRING) {
+                        System.out.println(cell.getStringCellValue() + "\t\t\t");
+                    } else if (type == CellType.NUMERIC) {
+                        System.out.println( (int) cell.getNumericCellValue() + "\t\t\t");
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not Found");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
