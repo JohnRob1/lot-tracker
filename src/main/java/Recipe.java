@@ -4,15 +4,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -34,13 +32,15 @@ public class Recipe {
     }
 
     public void newLotNumber (Scanner scanner) { //Used to create new lot number
+
         System.out.println("Input name of the ingredient");
         String ingredient = scanner.next();
         System.out.println("Input the lot number");
         String lotNumber = scanner.next();
-        //ingredient and lot number are now in reference vars
+        //ingredient and lot number are now in reference variables lotNumber and ingredient
+
         try {
-            File file = new File("lotNumbers.txt");
+            setFile(new File("lotNumbers.txt"));
             //"lotNumbers.txt is the text file that the program will read from to add lot numbers to an Excel file recipe
             if (!file.createNewFile()) System.out.println("File Found\n");
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -48,6 +48,7 @@ public class Recipe {
             String output = ingredient + "    " + lotNumber + "    " + dtf.format(ldt) + "\n";
             Files.write(Paths.get("lotNumbers.txt"),output.getBytes(), StandardOpenOption.APPEND);
             //Makes sure to append to the file and not replace
+
         } catch (IOException e) {
             System.out.println("Error\n");
             e.printStackTrace();
@@ -55,21 +56,47 @@ public class Recipe {
     }
 
     public void addLotNumbers(File excelFile) {
+        //reads Excel file
         try {
+
             FileInputStream fis = new FileInputStream(excelFile);
             XSSFWorkbook wb = new XSSFWorkbook(fis);
             XSSFSheet sheet = wb.getSheetAt(0);
-            Iterator<Row> iterator = sheet.iterator();
-            while(iterator.hasNext()) {
-                Row row = iterator.next();
+
+            for (Row row : sheet) {
+
                 Iterator<Cell> cellIterator = row.cellIterator();
-                while(cellIterator.hasNext()) {
+
+                while (cellIterator.hasNext()) {
+
                     Cell cell = cellIterator.next();
                     CellType type = cell.getCellType();
+
                     if (type == CellType.STRING) {
-                        System.out.println(cell.getStringCellValue() + "\t\t\t");
-                    } else if (type == CellType.NUMERIC) {
-                        System.out.println( (int) cell.getNumericCellValue() + "\t\t\t");
+                        //System.out.println("Ingredient to find: " + cell.getStringCellValue());
+                        String ingredient = cell.getStringCellValue();
+
+                        //start parsing through text file to find ingredient that matches that of Excel file
+                        setFile(new File("lotNumbers.txt"));
+                        FileReader fr = new FileReader(file);
+                        BufferedReader reader = new BufferedReader(fr);
+                        String line = reader.readLine();
+
+                        while (line != null) {
+                            String[] lot = line.split(" {4}");
+                            System.out.println("Lot Number: " + lot[1]);
+                            System.out.println(Arrays.toString(lot));
+
+                            if (ingredient.equals(lot[0])) {
+                                Cell cellToEdit = row.getCell((cell.getColumnIndex() + 1));
+                                if (cellToEdit == null) cellToEdit = row.createCell(cell.getColumnIndex() + 1);
+                                System.out.println("Column index: " + (int) (cell.getColumnIndex() + 1));
+                                cellToEdit.setCellValue(lot[1]);
+                                System.out.println("Placed lot number: " + lot[1] +  "; with ingredient: " + lot[0]);
+                            }
+
+                            line = reader.readLine();
+                        }
                     }
                 }
             }
