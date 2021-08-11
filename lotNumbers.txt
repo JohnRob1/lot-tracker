@@ -1,2 +1,10 @@
 Salt    123456    2021-08-10
-Dextrose    23094wegrkl    2021-08-10
+Sugar    123ABC    2021-08-10
+Onion    JASKJ09384    2021-08-11
+Garlic    NCAJ8453    2021-08-11
+Pepper    NASJ41.12    2021-08-11
+Syrup    ASJ-392    2021-08-11
+Red Pepper Flakes    QWIC9831    2021-08-11
+Celery Powder    93278ANCKJEHF10923CNAJE    2021-08-11
+Celery Powder 123    9318-20349    2021-08-11
+Spices    HFERYE123432    2021-08-11

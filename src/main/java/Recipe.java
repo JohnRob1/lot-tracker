@@ -42,7 +42,7 @@ public class Recipe {
         try {
             setFile(new File("lotNumbers.txt"));
             //"lotNumbers.txt is the text file that the program will read from to add lot numbers to an Excel file recipe
-            if (!file.createNewFile()) System.out.println("File Found\n");
+            // DEBUG if (!file.createNewFile()) System.out.println("File Found\n");
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDateTime ldt = LocalDateTime.now();
             String output = ingredient + "    " + lotNumber + "    " + dtf.format(ldt) + "\n";
@@ -73,7 +73,7 @@ public class Recipe {
                     CellType type = cell.getCellType();
 
                     if (type == CellType.STRING) {
-                        //System.out.println("Ingredient to find: " + cell.getStringCellValue());
+                        // DEBUG System.out.println("Ingredient to find: " + cell.getStringCellValue());
                         String ingredient = cell.getStringCellValue();
 
                         //start parsing through text file to find ingredient that matches that of Excel file
@@ -84,15 +84,15 @@ public class Recipe {
 
                         while (line != null) {
                             String[] lot = line.split(" {4}");
-                            System.out.println("Lot Number: " + lot[1]);
-                            System.out.println(Arrays.toString(lot));
+                            // DEBUG System.out.println("Lot Number: " + lot[1]);
+                            // DEBUG System.out.println(Arrays.toString(lot));
 
                             if (ingredient.equals(lot[0])) {
                                 Cell cellToEdit = row.getCell((cell.getColumnIndex() + 1));
                                 if (cellToEdit == null) cellToEdit = row.createCell(cell.getColumnIndex() + 1);
-                                System.out.println("Column index: " + (int) (cell.getColumnIndex() + 1));
+                                //DEBUG System.out.println("Column index: " + (int) (cell.getColumnIndex() + 1));
                                 cellToEdit.setCellValue(lot[1]);
-                                System.out.println("Placed lot number: " + lot[1] +  "; with ingredient: " + lot[0]);
+                                //DEBUG System.out.println("Placed lot number: " + lot[1] +  "; with ingredient: " + lot[0]);
                             }
 
                             line = reader.readLine();
@@ -100,6 +100,13 @@ public class Recipe {
                     }
                 }
             }
+
+            fis.close();
+            String excelFilename = excelFile.toString();
+
+            FileOutputStream outFile = new FileOutputStream(new File(excelFilename));
+            wb.write(outFile);
+            outFile.close();
         } catch (FileNotFoundException e) {
             System.out.println("File not Found");
         } catch (IOException e) {
