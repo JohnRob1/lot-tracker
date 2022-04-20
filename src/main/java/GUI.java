@@ -63,7 +63,7 @@ public class GUI {
             boolean warning = this.getWarning();
             if (warning) {
                 int answer = JOptionPane.showConfirmDialog(frame,
-                        "Make sure the excel file is closed when it is being updated\n Show again?",
+                        "Make sure the excel file is closed when it is being updated\n Show again this message again?",
                         "Reminder", JOptionPane.YES_NO_OPTION);
                 if (answer == JOptionPane.NO_OPTION) this.setWarning(false);
             }
