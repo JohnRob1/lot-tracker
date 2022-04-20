@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.io.*;
+import java.nio.file.Path;
 import java.util.Objects;
 
 public class GUI {
@@ -12,7 +13,6 @@ public class GUI {
     JLabel welcome = new JLabel("Welcome to Lot Tracker!", SwingConstants.CENTER);
     JFileChooser fileChooser = new JFileChooser();
     Icon logo = new ImageIcon(Objects.requireNonNull(getClass().getResource("logo.png")));
-    boolean warning = true;
 
     GUI() {
         frame = new JFrame("Lot Tracker");
@@ -59,18 +59,42 @@ public class GUI {
     }
 
     public void UpdateRecipe(java.awt.event.ActionEvent evt) {
-        if (warning) {
-            int answer = JOptionPane.showConfirmDialog(frame,
-                    "Make sure the excel file is closed when it is being updated\n Show again?",
-                    "Reminder", JOptionPane.YES_NO_OPTION);
-            if (answer == JOptionPane.NO_OPTION) warning = false;
+        try {
+            boolean warning = this.getWarning();
+            if (warning) {
+                int answer = JOptionPane.showConfirmDialog(frame,
+                        "Make sure the excel file is closed when it is being updated\n Show again?",
+                        "Reminder", JOptionPane.YES_NO_OPTION);
+                if (answer == JOptionPane.NO_OPTION) this.setWarning(false);
+            }
+            int i = fileChooser.showOpenDialog(frame);
+            if (i == JFileChooser.APPROVE_OPTION) {
+                File excelFile = fileChooser.getSelectedFile();
+                Recipe recipe = new Recipe(excelFile);
+                recipe.addLotNumbers(excelFile);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        int i = fileChooser.showOpenDialog(frame);
-        if (i == JFileChooser.APPROVE_OPTION) {
-            File excelFile = fileChooser.getSelectedFile();
-            Recipe recipe = new Recipe(excelFile);
-            recipe.addLotNumbers(excelFile);
-        }
+    }
+
+    private boolean getWarning() throws IOException {
+        Path warningPath = Path.of(Objects.requireNonNull(getClass().getResource("warning.txt")).getPath());
+        File warningFile = new File(String.valueOf(warningPath));
+        BufferedReader reader = new BufferedReader(new FileReader(warningFile));
+        String warn = reader.readLine();
+        reader.close();
+        return !warn.equals("false") && !warn.equals("");
+    }
+
+    public void setWarning(boolean warning) throws IOException {
+        Path warningPath = Path.of(Objects.requireNonNull(getClass().getResource("warning.txt")).getPath());
+        File warningFile = new File(String.valueOf(warningPath));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(warningFile));
+
+        if (warning) writer.write("true");
+        else writer.write("false");
+        writer.close();
     }
 
     public static void main(String[] args) {
