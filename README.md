@@ -28,4 +28,4 @@ Finally, click the Fisher Logo and go shop at Fisher's!
 * Add in server capabilities so any computer in the plant can access the lot numbers
 * Add a better UI for Adding a Lot Number 
   - allow the user to add as many lot numbers as they want in one "Add Lot Number" button click
-* When I learn it, make this in Flutter
+* When I learn how, make this front end in Flutter
