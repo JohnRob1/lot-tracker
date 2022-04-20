@@ -6,12 +6,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Recipe {
@@ -31,40 +33,42 @@ public class Recipe {
         this.file = file;
     }
 
-    public void newLotNumber (Scanner scanner) { //Used to create new lot number
-
-        System.out.println("Input name of the ingredient");
-        String ingredient = scanner.next();
-        System.out.println("Input the lot number");
-        String lotNumber = scanner.next();
-        //ingredient and lot number are now in reference variables lotNumber and ingredient
-
-        try {
-            setFile(new File("lotNumbers.txt"));
-            //"lotNumbers.txt is the text file that the program will read from to add lot numbers to an Excel file recipe
-            // DEBUG if (!file.createNewFile()) System.out.println("File Found\n");
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDateTime ldt = LocalDateTime.now();
-            String output = ingredient + "    " + lotNumber + "    " + dtf.format(ldt) + "\n";
-            Files.write(Paths.get("lotNumbers.txt"),output.getBytes(), StandardOpenOption.APPEND);
-            //Makes sure to append to the file and not replace
-
-        } catch (IOException e) {
-            System.out.println("Error\n");
-            e.printStackTrace();
-        }
-    }
-
+    // adapted from https://stackoverflow.com/questions/1377279/find-a-line-in-a-file-and-remove-it
     public void newLotNumber (String lotNumber, String ingredient) { //Used to create new lot number
 
+        ingredient = ingredient.toLowerCase();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime ldt = LocalDateTime.now();
+
         try {
-            setFile(new File("lotNumbers.txt"));
+            Path lotNumbersPath = Path.of(Objects.requireNonNull(getClass().getResource("lotNumbers.txt")).getPath());
+            File lotNumbers = new File(String.valueOf(lotNumbersPath));
+            setFile(lotNumbers);
+
+            //check if lot number already exists and replace it
+            String source = Paths.get(Objects.requireNonNull(this.getClass().getResource("/")).getPath()).toString();
+            File tempFile = new File(source + "myTempFile.txt");
+            BufferedReader reader = new BufferedReader(new FileReader(lotNumbers));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+            String line;
+            String[] info;
+
+            while ((line = reader.readLine()) != null) {
+                //System.out.println(line);
+                info = line.split(" {4}");
+                info[0] = info[0].toLowerCase();
+                if (info[0].equals(ingredient)) continue;
+                writer.append(line + "\n");
+            }
+            writer.close();
+            reader.close();
+            boolean successful = tempFile.renameTo(lotNumbers);
+            //System.out.println(successful);
+
             //"lotNumbers.txt is the text file that the program will read from to add lot numbers to an Excel file recipe
             // DEBUG if (!file.createNewFile()) System.out.println("File Found\n");
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDateTime ldt = LocalDateTime.now();
             String output = ingredient + "    " + lotNumber + "    " + dtf.format(ldt) + "\n";
-            Files.write(Paths.get("lotNumbers.txt"),output.getBytes(), StandardOpenOption.APPEND);
+            Files.write(lotNumbersPath, output.getBytes(), StandardOpenOption.APPEND);
             //Makes sure to append to the file and not replace
 
         } catch (IOException e) {
@@ -96,7 +100,8 @@ public class Recipe {
                         ingredient = ingredient.toLowerCase();
 
                         //start parsing through text file to find ingredient that matches that of Excel file
-                        setFile(new File("lotNumbers.txt"));
+                        File lotNumbers = new File(Objects.requireNonNull(getClass().getResource("lotNumbers.txt")).getPath());
+                        setFile(lotNumbers);
                         FileReader fr = new FileReader(file);
                         BufferedReader reader = new BufferedReader(fr);
                         String line = reader.readLine();
