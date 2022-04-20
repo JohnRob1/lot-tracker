@@ -23,3 +23,9 @@ Open up the recipe file and you will see the lot numbers updated next to the cor
 Finally, click the Fisher Logo and go shop at Fisher's!
 
 ![Alt Text](https://media4.giphy.com/media/XzCnW7KJDFasMKJdia/giphy.gif?cid=790b7611105828a05c9be817a1c41083f0bd0b54e2d88135&rid=giphy.gif&ct=g)
+
+## TODO
+* Add in server capabilities so any computer in the plant can access the lot numbers
+* Add a better UI for Adding a Lot Number 
+  - allow the user to add as many lot numbers as they want in one "Add Lot Number" button click
+* When I learn it, make this in Flutter
