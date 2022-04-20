@@ -63,9 +63,9 @@ public class GUI {
             boolean warning = this.getWarning();
             if (warning) {
                 int answer = JOptionPane.showConfirmDialog(frame,
-                        "Make sure the excel file is closed when it is being updated\n Show again this message again?",
+                        "Make sure the excel file is closed when it is being updated\n Stop showing this message?",
                         "Reminder", JOptionPane.YES_NO_OPTION);
-                if (answer == JOptionPane.NO_OPTION) this.setWarning(false);
+                if (answer == JOptionPane.YES_OPTION) this.setWarning(false);
             }
             int i = fileChooser.showOpenDialog(frame);
             if (i == JFileChooser.APPROVE_OPTION) {
