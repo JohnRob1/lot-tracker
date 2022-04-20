@@ -55,6 +55,24 @@ public class Recipe {
         }
     }
 
+    public void newLotNumber (String lotNumber, String ingredient) { //Used to create new lot number
+
+        try {
+            setFile(new File("lotNumbers.txt"));
+            //"lotNumbers.txt is the text file that the program will read from to add lot numbers to an Excel file recipe
+            // DEBUG if (!file.createNewFile()) System.out.println("File Found\n");
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime ldt = LocalDateTime.now();
+            String output = ingredient + "    " + lotNumber + "    " + dtf.format(ldt) + "\n";
+            Files.write(Paths.get("lotNumbers.txt"),output.getBytes(), StandardOpenOption.APPEND);
+            //Makes sure to append to the file and not replace
+
+        } catch (IOException e) {
+            System.out.println("Error\n");
+            e.printStackTrace();
+        }
+    }
+
     public void addLotNumbers(File excelFile) {
         //reads Excel file
         try {
@@ -75,12 +93,14 @@ public class Recipe {
                     if (type == CellType.STRING) {
                         // DEBUG System.out.println("Ingredient to find: " + cell.getStringCellValue());
                         String ingredient = cell.getStringCellValue();
+                        ingredient = ingredient.toLowerCase();
 
                         //start parsing through text file to find ingredient that matches that of Excel file
                         setFile(new File("lotNumbers.txt"));
                         FileReader fr = new FileReader(file);
                         BufferedReader reader = new BufferedReader(fr);
                         String line = reader.readLine();
+                        line = line.toLowerCase();
 
                         while (line != null) {
                             String[] lot = line.split(" {4}");
