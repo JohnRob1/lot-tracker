@@ -1,5 +1,5 @@
 # lot-tracker
-A Meat Packing Company must write down the lot numbers for each of their ingredients to be sent to the government for inspection. This can get very tedious being handwritten, especially when most of the lot numbers repeat themselves. Lot-Tracker is a Java program to print the lot numbers write onto the excel recipe sheet.
+A Meat Packing Company must write down the lot numbers for each of their ingredients to be sent to the government for inspection. This can get very tedious being handwritten, especially when most of the lot numbers repeat themselves. Lot-Tracker is a Java program to print the lot numbers right onto the excel recipe sheet.
 ## How It Works
 ### Adding a Lot Number
 Clicking the Add Lot Number button will bring up a dialogue to input the ingredient name and lot number to be put into the excel file
